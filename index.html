@@ -6,8 +6,10 @@
 
     <title>Silly Hack — Clutcher.io</title>
 
-    <meta name="description"
-          content="Silly Hack for Clutcher.io">
+    <meta
+        name="description"
+        content="Silly Hack for Clutcher.io"
+    >
 
     <style>
         * {
@@ -19,7 +21,6 @@
         :root {
             --bg: #070907;
             --glass: rgba(12, 15, 12, 0.55);
-            --glass-light: rgba(255, 255, 255, 0.06);
             --border: rgba(255, 255, 255, 0.12);
 
             --text: #ffffff;
@@ -43,6 +44,7 @@
 
             background: var(--bg);
             color: var(--text);
+
             overflow-x: hidden;
         }
 
@@ -52,16 +54,22 @@
 
         .background {
             position: fixed;
+
             inset: 0;
+
             width: 100%;
             height: 100%;
+
             z-index: -10;
+
             overflow: hidden;
+
             background: #050705;
         }
 
         .background video {
             position: absolute;
+
             top: 50%;
             left: 50%;
 
@@ -73,7 +81,7 @@
 
             transform:
                 translate(-50%, -50%)
-                scale(1.07);
+                scale(1.08);
 
             object-fit: cover;
 
@@ -82,13 +90,14 @@
                 brightness(0.48)
                 saturate(0.85);
 
-            opacity: 0.9;
+            opacity: 0.92;
         }
 
-        /* Dark layer */
+        /* Dark overlay */
 
         .background::after {
             content: "";
+
             position: absolute;
             inset: 0;
 
@@ -100,22 +109,27 @@
                 ),
                 linear-gradient(
                     to bottom,
-                    rgba(0, 0, 0, 0.24),
-                    rgba(0, 0, 0, 0.6)
+                    rgba(0, 0, 0, 0.22),
+                    rgba(0, 0, 0, 0.65)
                 );
 
             pointer-events: none;
         }
 
-        /* Tiny grain texture */
+        /* ============================================================
+           GRAIN
+        ============================================================ */
 
         .grain {
             position: fixed;
+
             inset: 0;
+
             z-index: -5;
+
             pointer-events: none;
 
-            opacity: 0.055;
+            opacity: 0.05;
 
             background-image:
                 url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
@@ -129,23 +143,39 @@
 
         nav {
             position: fixed;
+
             z-index: 100;
+
             top: 24px;
             left: 50%;
+
             transform: translateX(-50%);
 
-            width: min(1100px, calc(100% - 40px));
+            width:
+                min(
+                    1100px,
+                    calc(100% - 40px)
+                );
 
             display: flex;
+
             align-items: center;
             justify-content: space-between;
 
-            padding: 11px 12px 11px 20px;
+            padding:
+                11px
+                12px
+                11px
+                20px;
 
-            border: 1px solid var(--border);
+            border:
+                1px solid
+                var(--border);
+
             border-radius: 18px;
 
-            background: rgba(8, 10, 8, 0.55);
+            background:
+                rgba(8, 10, 8, 0.55);
 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -157,7 +187,9 @@
 
         .logo {
             display: flex;
+
             align-items: center;
+
             gap: 10px;
 
             font-size: 17px;
@@ -171,6 +203,7 @@
             width: 28px;
 
             display: grid;
+
             place-items: center;
 
             border-radius: 8px;
@@ -187,7 +220,8 @@
                 );
 
             box-shadow:
-                0 0 25px rgba(140, 255, 90, 0.18);
+                0 0 25px
+                rgba(140, 255, 90, 0.18);
         }
 
         .logo span {
@@ -196,13 +230,17 @@
 
         .nav-links {
             display: flex;
+
             align-items: center;
+
             gap: 8px;
         }
 
         .nav-links a {
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.7);
+
+            color:
+                rgba(255, 255, 255, 0.7);
 
             font-size: 14px;
             font-weight: 500;
@@ -213,12 +251,15 @@
 
             transition:
                 color 0.2s ease,
-                background 0.2s ease;
+                background 0.2s ease,
+                transform 0.2s ease;
         }
 
         .nav-links a:hover {
             color: white;
-            background: rgba(255, 255, 255, 0.07);
+
+            background:
+                rgba(255, 255, 255, 0.07);
         }
 
         .nav-links .nav-button {
@@ -232,16 +273,27 @@
                 );
 
             font-weight: 700;
+
+            box-shadow:
+                0 5px 25px
+                rgba(120, 255, 80, 0.15);
         }
 
         .nav-links .nav-button:hover {
             color: #071005;
+
+            transform: translateY(-1px);
+
             background:
                 linear-gradient(
                     135deg,
                     #b6ff82,
                     #6aff99
                 );
+
+            box-shadow:
+                0 8px 30px
+                rgba(120, 255, 80, 0.25);
         }
 
         /* ============================================================
@@ -254,50 +306,70 @@
             min-height: 100vh;
 
             display: flex;
+
             justify-content: center;
             align-items: center;
 
             text-align: center;
 
-            padding: 130px 24px 70px;
+            padding:
+                130px
+                24px
+                70px;
         }
 
         .hero-content {
             max-width: 1000px;
 
-            animation: appear 1s cubic-bezier(.2,.8,.2,1);
+            animation:
+                appear
+                1s
+                cubic-bezier(.2,.8,.2,1);
         }
 
         @keyframes appear {
             from {
                 opacity: 0;
-                transform: translateY(24px);
+
+                transform:
+                    translateY(24px);
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+
+                transform:
+                    translateY(0);
             }
         }
 
         .tag {
             display: inline-flex;
+
             align-items: center;
+
             gap: 8px;
 
             margin-bottom: 24px;
 
-            padding: 8px 13px;
+            padding:
+                8px
+                13px;
 
-            border: 1px solid rgba(156, 255, 87, 0.18);
+            border:
+                1px solid
+                rgba(156, 255, 87, 0.18);
+
             border-radius: 999px;
 
-            color: rgba(220, 255, 200, 0.92);
+            color:
+                rgba(220, 255, 200, 0.92);
 
             font-size: 13px;
             font-weight: 600;
 
-            background: rgba(70, 120, 40, 0.12);
+            background:
+                rgba(70, 120, 40, 0.12);
 
             backdrop-filter: blur(14px);
         }
@@ -311,27 +383,42 @@
             background: var(--accent);
 
             box-shadow:
-                0 0 12px var(--accent);
+                0 0 12px
+                var(--accent);
         }
 
         h1 {
-            font-size: clamp(72px, 11vw, 160px);
+            font-size:
+                clamp(
+                    72px,
+                    11vw,
+                    160px
+                );
 
             line-height: 0.85;
+
             letter-spacing: -8px;
 
             font-weight: 800;
 
             text-shadow:
-                0 8px 50px rgba(0, 0, 0, 0.4);
+                0 8px 50px
+                rgba(0, 0, 0, 0.4);
         }
 
         .clutcher {
             margin-top: 23px;
 
-            color: rgba(255, 255, 255, 0.52);
+            color:
+                rgba(255, 255, 255, 0.52);
 
-            font-size: clamp(16px, 2vw, 23px);
+            font-size:
+                clamp(
+                    16px,
+                    2vw,
+                    23px
+                );
+
             font-weight: 500;
 
             letter-spacing: 5px;
@@ -341,28 +428,34 @@
 
         .clutcher strong {
             color: var(--accent);
+
             font-weight: 650;
         }
 
         .description {
-            max-width: 600px;
+            max-width: 620px;
 
-            margin: 27px auto 0;
+            margin:
+                27px
+                auto
+                0;
 
             color: var(--muted);
 
             font-size: 17px;
+
             line-height: 1.7;
         }
 
         /* ============================================================
-           HERO BUTTONS
+           BUTTONS
         ============================================================ */
 
         .buttons {
             margin-top: 37px;
 
             display: flex;
+
             justify-content: center;
             align-items: center;
 
@@ -374,12 +467,17 @@
         .button {
             position: relative;
 
-            min-width: 180px;
+            min-width: 190px;
 
-            padding: 15px 25px;
+            padding:
+                15px
+                25px;
 
             border-radius: 13px;
-            border: 1px solid rgba(255, 255, 255, 0.14);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.14);
 
             text-decoration: none;
 
@@ -388,7 +486,8 @@
 
             color: white;
 
-            background: rgba(255, 255, 255, 0.06);
+            background:
+                rgba(255, 255, 255, 0.06);
 
             backdrop-filter: blur(18px);
 
@@ -400,11 +499,14 @@
         }
 
         .button:hover {
-            transform: translateY(-2px);
+            transform:
+                translateY(-2px);
 
-            background: rgba(255, 255, 255, 0.1);
+            background:
+                rgba(255, 255, 255, 0.1);
 
-            border-color: rgba(255, 255, 255, 0.25);
+            border-color:
+                rgba(255, 255, 255, 0.25);
         }
 
         .button.primary {
@@ -420,12 +522,14 @@
                 );
 
             box-shadow:
-                0 8px 35px rgba(105, 255, 85, 0.16);
+                0 8px 35px
+                rgba(105, 255, 85, 0.16);
         }
 
         .button.primary:hover {
             box-shadow:
-                0 12px 50px rgba(105, 255, 85, 0.28);
+                0 12px 50px
+                rgba(105, 255, 85, 0.28);
         }
 
         /* ============================================================
@@ -438,18 +542,24 @@
             bottom: 28px;
             left: 50%;
 
-            transform: translateX(-50%);
+            transform:
+                translateX(-50%);
 
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
+
             gap: 9px;
 
-            color: rgba(255,255,255,.35);
+            color:
+                rgba(255,255,255,.35);
 
             font-size: 11px;
 
             letter-spacing: 2px;
+
             text-transform: uppercase;
         }
 
@@ -457,7 +567,9 @@
             width: 22px;
             height: 34px;
 
-            border: 1px solid rgba(255,255,255,.28);
+            border:
+                1px solid
+                rgba(255,255,255,.28);
 
             border-radius: 20px;
 
@@ -479,15 +591,24 @@
 
             background: var(--accent);
 
-            transform: translateX(-50%);
+            transform:
+                translateX(-50%);
 
-            animation: scrollAnimation 1.8s infinite;
+            animation:
+                scrollAnimation
+                1.8s
+                infinite;
         }
 
         @keyframes scrollAnimation {
             0% {
                 opacity: 0;
-                transform: translate(-50%, -2px);
+
+                transform:
+                    translate(
+                        -50%,
+                        -2px
+                    );
             }
 
             30% {
@@ -496,7 +617,12 @@
 
             100% {
                 opacity: 0;
-                transform: translate(-50%, 8px);
+
+                transform:
+                    translate(
+                        -50%,
+                        8px
+                    );
             }
         }
 
@@ -511,7 +637,12 @@
 
             padding:
                 120px
-                max(24px, calc((100vw - 1100px) / 2));
+                max(
+                    24px,
+                    calc(
+                        (100vw - 1100px) / 2
+                    )
+                );
 
             background:
                 linear-gradient(
@@ -537,7 +668,12 @@
         }
 
         .section-title {
-            font-size: clamp(40px, 6vw, 70px);
+            font-size:
+                clamp(
+                    40px,
+                    6vw,
+                    70px
+                );
 
             max-width: 700px;
 
@@ -551,7 +687,7 @@
 
             margin-top: 20px;
 
-            max-width: 600px;
+            max-width: 620px;
 
             line-height: 1.7;
 
@@ -600,7 +736,8 @@
         }
 
         .feature:hover {
-            transform: translateY(-5px);
+            transform:
+                translateY(-5px);
 
             border-color:
                 rgba(156, 255, 87, 0.22);
@@ -620,6 +757,7 @@
             border-radius: 11px;
 
             display: grid;
+
             place-items: center;
 
             margin-bottom: 35px;
@@ -651,11 +789,83 @@
         }
 
         /* ============================================================
+           JOIN SECTION
+        ============================================================ */
+
+        .join {
+            padding:
+                120px
+                24px;
+
+            text-align: center;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(100,255,70,.06),
+                    transparent 45%
+                ),
+                #070907;
+        }
+
+        .join-inner {
+            max-width: 750px;
+
+            margin: auto;
+
+            padding:
+                60px
+                30px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+
+            border-radius: 28px;
+
+            background:
+                rgba(255,255,255,.025);
+
+            backdrop-filter:
+                blur(20px);
+        }
+
+        .join h2 {
+            font-size:
+                clamp(
+                    40px,
+                    6vw,
+                    70px
+                );
+
+            letter-spacing: -3px;
+        }
+
+        .join p {
+            margin:
+                20px
+                auto
+                0;
+
+            max-width: 550px;
+
+            color: var(--muted);
+
+            line-height: 1.7;
+        }
+
+        .join .button {
+            margin-top: 30px;
+        }
+
+        /* ============================================================
            FOOTER
         ============================================================ */
 
         footer {
-            padding: 40px 25px;
+            padding:
+                40px
+                25px;
 
             text-align: center;
 
@@ -665,13 +875,15 @@
 
             background: #070907;
 
-            color: rgba(255,255,255,.35);
+            color:
+                rgba(255,255,255,.35);
 
             font-size: 13px;
         }
 
         footer strong {
-            color: rgba(255,255,255,.7);
+            color:
+                rgba(255,255,255,.7);
         }
 
         /* ============================================================
@@ -706,6 +918,7 @@
 
             h1 {
                 font-size: 68px;
+
                 letter-spacing: -4px;
             }
 
@@ -717,6 +930,13 @@
                 width: 100%;
             }
 
+            nav {
+                width:
+                    calc(
+                        100% - 24px
+                    );
+            }
+
         }
 
     </style>
@@ -725,7 +945,7 @@
 <body>
 
     <!-- ============================================================
-         VIDEO BACKGROUND
+         BACKGROUND VIDEO
     ============================================================ -->
 
     <div class="background">
@@ -737,7 +957,10 @@
             playsinline
             preload="auto"
         >
-            <source src="background.mp4" type="video/mp4">
+            <source
+                src="background.mp4"
+                type="video/mp4"
+            >
         </video>
 
     </div>
@@ -772,13 +995,11 @@
                 About
             </a>
 
-            <a href="YOUR_DISCORD_LINK">
-                Discord
-            </a>
-
             <a
-                href="YOUR_DOWNLOAD_LINK"
+                href="https://discord.gg/K7xzQRtJP3"
                 class="nav-button"
+                target="_blank"
+                rel="noopener noreferrer"
             >
                 Get Silly
             </a>
@@ -797,8 +1018,11 @@
         <div class="hero-content">
 
             <div class="tag">
+
                 <div class="tag-dot"></div>
+
                 Clutcher.io
+
             </div>
 
 
@@ -808,7 +1032,13 @@
 
 
             <div class="clutcher">
-                built for <strong>clutcher.io</strong>
+
+                built for
+
+                <strong>
+                    clutcher.io
+                </strong>
+
             </div>
 
 
@@ -818,23 +1048,20 @@
                 visuals, movement tools, performance controls
                 and way too many silly options.
 
+                Join the community to grab the latest release.
+
             </p>
 
 
             <div class="buttons">
 
                 <a
-                    href="YOUR_DOWNLOAD_LINK"
+                    href="https://discord.gg/K7xzQRtJP3"
                     class="button primary"
+                    target="_blank"
+                    rel="noopener noreferrer"
                 >
                     Get Silly
-                </a>
-
-                <a
-                    href="YOUR_DISCORD_LINK"
-                    class="button"
-                >
-                    Join Discord
                 </a>
 
             </div>
@@ -868,8 +1095,10 @@
 
 
         <h2 class="section-title">
+
             Surprisingly unserious.
             Seriously customizable.
+
         </h2>
 
 
@@ -895,9 +1124,11 @@
                 </h3>
 
                 <p>
+
                     Customize your game with visual controls,
                     world settings, camera options and other
                     client-side effects.
+
                 </p>
 
             </div>
@@ -914,9 +1145,11 @@
                 </h3>
 
                 <p>
+
                     Fine-tune rendering and performance options
                     to keep Clutcher.io running as smoothly as
                     possible.
+
                 </p>
 
             </div>
@@ -933,9 +1166,11 @@
                 </h3>
 
                 <p>
+
                     Everything lives inside the Silly Hack GUI,
                     with independent modules and configurable
                     settings.
+
                 </p>
 
             </div>
@@ -946,62 +1181,164 @@
 
 
     <!-- ============================================================
+         GET SILLY / ABOUT
+    ============================================================ -->
+
+    <section
+        class="join"
+        id="about"
+    >
+
+        <div class="join-inner">
+
+            <div class="section-label">
+                Community
+            </div>
+
+            <h2>
+                Get Silly.
+            </h2>
+
+            <p>
+
+                Releases, updates and downloads are available
+                through the Silly Hack Discord server.
+
+            </p>
+
+            <a
+                href="https://discord.gg/K7xzQRtJP3"
+                class="button primary"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Get Silly
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================================================
          FOOTER
     ============================================================ -->
 
-    <footer id="about">
+    <footer>
 
-        <strong>Silly Hack</strong>
+        <strong>
+            Silly Hack
+        </strong>
+
         · made for Clutcher.io
 
     </footer>
 
 
+    <!-- ============================================================
+         SCRIPT
+    ============================================================ -->
+
     <script>
 
-        /*
-         * Slight parallax effect on the hero.
-         */
-
-        const hero = document.querySelector(".hero-content");
-
-        window.addEventListener("mousemove", (event) => {
-
-            if (window.innerWidth < 800)
-                return;
-
-            const x =
-                (event.clientX / window.innerWidth - 0.5) * 6;
-
-            const y =
-                (event.clientY / window.innerHeight - 0.5) * 6;
-
-            hero.style.transform =
-                `translate(${x}px, ${y}px)`;
-
-        });
-
-
-        /*
-         * Pause the background video if the tab
-         * isn't visible.
-         */
+        const hero =
+            document.querySelector(
+                ".hero-content"
+            );
 
         const backgroundVideo =
-            document.querySelector(".background video");
+            document.querySelector(
+                ".background video"
+            );
+
+
+        /*
+         * Very slight mouse movement.
+         */
+
+        window.addEventListener(
+            "mousemove",
+            (event) => {
+
+                if (
+                    window.innerWidth < 800
+                ) {
+                    return;
+                }
+
+                const x =
+                    (
+                        event.clientX /
+                        window.innerWidth
+                        - 0.5
+                    ) * 5;
+
+                const y =
+                    (
+                        event.clientY /
+                        window.innerHeight
+                        - 0.5
+                    ) * 5;
+
+                hero.style.transform =
+                    `translate(${x}px, ${y}px)`;
+
+            }
+        );
+
+
+        /*
+         * Return to center when mouse leaves.
+         */
+
+        document.addEventListener(
+            "mouseleave",
+            () => {
+
+                hero.style.transform =
+                    "translate(0px, 0px)";
+
+            }
+        );
+
+
+        /*
+         * Pause the background video when
+         * the browser tab isn't visible.
+         */
 
         document.addEventListener(
             "visibilitychange",
             () => {
 
-                if (document.hidden) {
+                if (
+                    document.hidden
+                ) {
+
                     backgroundVideo.pause();
+
                 } else {
-                    backgroundVideo.play();
+
+                    backgroundVideo
+                        .play()
+                        .catch(() => {});
+
                 }
 
             }
         );
+
+
+        /*
+         * Make sure muted autoplay starts
+         * when possible.
+         */
+
+        backgroundVideo.muted = true;
+
+        backgroundVideo
+            .play()
+            .catch(() => {});
 
     </script>
 
