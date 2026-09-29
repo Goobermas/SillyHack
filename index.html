@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Silly Hack — Clutcher.io</title>
+
+    <meta name="description"
+          content="Silly Hack for Clutcher.io">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #070907;
+            --glass: rgba(12, 15, 12, 0.55);
+            --glass-light: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.12);
+
+            --text: #ffffff;
+            --muted: rgba(255, 255, 255, 0.58);
+
+            --accent: #9cff57;
+            --accent2: #53ff8a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           BACKGROUND VIDEO
+        ============================================================ */
+
+        .background {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -10;
+            overflow: hidden;
+            background: #050705;
+        }
+
+        .background video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+
+            min-width: 100%;
+            min-height: 100%;
+
+            width: auto;
+            height: auto;
+
+            transform:
+                translate(-50%, -50%)
+                scale(1.07);
+
+            object-fit: cover;
+
+            filter:
+                blur(12px)
+                brightness(0.48)
+                saturate(0.85);
+
+            opacity: 0.9;
+        }
+
+        /* Dark layer */
+
+        .background::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            background:
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(70, 150, 50, 0.08),
+                    transparent 40%
+                ),
+                linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0.24),
+                    rgba(0, 0, 0, 0.6)
+                );
+
+            pointer-events: none;
+        }
+
+        /* Tiny grain texture */
+
+        .grain {
+            position: fixed;
+            inset: 0;
+            z-index: -5;
+            pointer-events: none;
+
+            opacity: 0.055;
+
+            background-image:
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+
+            background-repeat: repeat;
+        }
+
+        /* ============================================================
+           NAVBAR
+        ============================================================ */
+
+        nav {
+            position: fixed;
+            z-index: 100;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            width: min(1100px, calc(100% - 40px));
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 11px 12px 11px 20px;
+
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            background: rgba(8, 10, 8, 0.55);
+
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+
+            box-shadow:
+                0 12px 50px rgba(0, 0, 0, 0.28),
+                inset 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 17px;
+            font-weight: 700;
+
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            height: 28px;
+            width: 28px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 8px;
+
+            color: #071005;
+
+            font-weight: 900;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--accent),
+                    var(--accent2)
+                );
+
+            box-shadow:
+                0 0 25px rgba(140, 255, 90, 0.18);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+
+            font-size: 14px;
+            font-weight: 500;
+
+            padding: 9px 14px;
+
+            border-radius: 10px;
+
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .nav-links .nav-button {
+            color: #071005;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--accent),
+                    var(--accent2)
+                );
+
+            font-weight: 700;
+        }
+
+        .nav-links .nav-button:hover {
+            color: #071005;
+            background:
+                linear-gradient(
+                    135deg,
+                    #b6ff82,
+                    #6aff99
+                );
+        }
+
+        /* ============================================================
+           HERO
+        ============================================================ */
+
+        .hero {
+            position: relative;
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 130px 24px 70px;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+
+            animation: appear 1s cubic-bezier(.2,.8,.2,1);
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            margin-bottom: 24px;
+
+            padding: 8px 13px;
+
+            border: 1px solid rgba(156, 255, 87, 0.18);
+            border-radius: 999px;
+
+            color: rgba(220, 255, 200, 0.92);
+
+            font-size: 13px;
+            font-weight: 600;
+
+            background: rgba(70, 120, 40, 0.12);
+
+            backdrop-filter: blur(14px);
+        }
+
+        .tag-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--accent);
+
+            box-shadow:
+                0 0 12px var(--accent);
+        }
+
+        h1 {
+            font-size: clamp(72px, 11vw, 160px);
+
+            line-height: 0.85;
+            letter-spacing: -8px;
+
+            font-weight: 800;
+
+            text-shadow:
+                0 8px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .clutcher {
+            margin-top: 23px;
+
+            color: rgba(255, 255, 255, 0.52);
+
+            font-size: clamp(16px, 2vw, 23px);
+            font-weight: 500;
+
+            letter-spacing: 5px;
+
+            text-transform: uppercase;
+        }
+
+        .clutcher strong {
+            color: var(--accent);
+            font-weight: 650;
+        }
+
+        .description {
+            max-width: 600px;
+
+            margin: 27px auto 0;
+
+            color: var(--muted);
+
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        /* ============================================================
+           HERO BUTTONS
+        ============================================================ */
+
+        .buttons {
+            margin-top: 37px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+        .button {
+            position: relative;
+
+            min-width: 180px;
+
+            padding: 15px 25px;
+
+            border-radius: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+
+            text-decoration: none;
+
+            font-size: 15px;
+            font-weight: 650;
+
+            color: white;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            backdrop-filter: blur(18px);
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .button.primary {
+            color: #081006;
+
+            border-color: transparent;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--accent),
+                    var(--accent2)
+                );
+
+            box-shadow:
+                0 8px 35px rgba(105, 255, 85, 0.16);
+        }
+
+        .button.primary:hover {
+            box-shadow:
+                0 12px 50px rgba(105, 255, 85, 0.28);
+        }
+
+        /* ============================================================
+           SCROLL INDICATOR
+        ============================================================ */
+
+        .scroll {
+            position: absolute;
+
+            bottom: 28px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 9px;
+
+            color: rgba(255,255,255,.35);
+
+            font-size: 11px;
+
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .mouse {
+            width: 22px;
+            height: 34px;
+
+            border: 1px solid rgba(255,255,255,.28);
+
+            border-radius: 20px;
+
+            position: relative;
+        }
+
+        .mouse::after {
+            content: "";
+
+            position: absolute;
+
+            top: 7px;
+            left: 50%;
+
+            width: 3px;
+            height: 7px;
+
+            border-radius: 3px;
+
+            background: var(--accent);
+
+            transform: translateX(-50%);
+
+            animation: scrollAnimation 1.8s infinite;
+        }
+
+        @keyframes scrollAnimation {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -2px);
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, 8px);
+            }
+        }
+
+        /* ============================================================
+           CONTENT
+        ============================================================ */
+
+        .content {
+            min-height: 100vh;
+
+            position: relative;
+
+            padding:
+                120px
+                max(24px, calc((100vw - 1100px) / 2));
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(6, 8, 6, 0.88),
+                    #070907
+                );
+
+            backdrop-filter: blur(15px);
+        }
+
+        .section-label {
+            color: var(--accent);
+
+            font-size: 12px;
+            font-weight: 700;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: clamp(40px, 6vw, 70px);
+
+            max-width: 700px;
+
+            line-height: 1;
+
+            letter-spacing: -3px;
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+
+            margin-top: 20px;
+
+            max-width: 600px;
+
+            line-height: 1.7;
+
+            font-size: 16px;
+        }
+
+        /* ============================================================
+           FEATURE CARDS
+        ============================================================ */
+
+        .features {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 16px;
+
+            margin-top: 60px;
+        }
+
+        .feature {
+            min-height: 230px;
+
+            padding: 26px;
+
+            border-radius: 20px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.08);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.055),
+                    rgba(255,255,255,.018)
+                );
+
+            backdrop-filter: blur(15px);
+
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                background .25s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+
+            border-color:
+                rgba(156, 255, 87, 0.22);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(156,255,87,.07),
+                    rgba(255,255,255,.025)
+                );
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 11px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 35px;
+
+            background:
+                rgba(156, 255, 87, 0.1);
+
+            border:
+                1px solid
+                rgba(156, 255, 87, 0.14);
+
+            color: var(--accent);
+
+            font-size: 20px;
+        }
+
+        .feature h3 {
+            font-size: 19px;
+
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: var(--muted);
+
+            line-height: 1.65;
+
+            font-size: 14px;
+        }
+
+        /* ============================================================
+           FOOTER
+        ============================================================ */
+
+        footer {
+            padding: 40px 25px;
+
+            text-align: center;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,.06);
+
+            background: #070907;
+
+            color: rgba(255,255,255,.35);
+
+            font-size: 13px;
+        }
+
+        footer strong {
+            color: rgba(255,255,255,.7);
+        }
+
+        /* ============================================================
+           MOBILE
+        ============================================================ */
+
+        @media (max-width: 800px) {
+
+            nav {
+                top: 15px;
+            }
+
+            .nav-links a:not(.nav-button) {
+                display: none;
+            }
+
+            h1 {
+                letter-spacing: -5px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .description {
+                font-size: 15px;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            h1 {
+                font-size: 68px;
+                letter-spacing: -4px;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .buttons {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================
+         VIDEO BACKGROUND
+    ============================================================ -->
+
+    <div class="background">
+
+        <video
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+        >
+            <source src="background.mp4" type="video/mp4">
+        </video>
+
+    </div>
+
+    <div class="grain"></div>
+
+
+    <!-- ============================================================
+         NAVIGATION
+    ============================================================ -->
+
+    <nav>
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                S
+            </div>
+
+            Silly<span>Hack</span>
+
+        </div>
+
+
+        <div class="nav-links">
+
+            <a href="#features">
+                Features
+            </a>
+
+            <a href="#about">
+                About
+            </a>
+
+            <a href="YOUR_DISCORD_LINK">
+                Discord
+            </a>
+
+            <a
+                href="YOUR_DOWNLOAD_LINK"
+                class="nav-button"
+            >
+                Get Silly
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ============================================================
+         HERO
+    ============================================================ -->
+
+    <main class="hero">
+
+        <div class="hero-content">
+
+            <div class="tag">
+                <div class="tag-dot"></div>
+                Clutcher.io
+            </div>
+
+
+            <h1>
+                Silly Hack
+            </h1>
+
+
+            <div class="clutcher">
+                built for <strong>clutcher.io</strong>
+            </div>
+
+
+            <p class="description">
+
+                A ridiculously configurable client with
+                visuals, movement tools, performance controls
+                and way too many silly options.
+
+            </p>
+
+
+            <div class="buttons">
+
+                <a
+                    href="YOUR_DOWNLOAD_LINK"
+                    class="button primary"
+                >
+                    Get Silly
+                </a>
+
+                <a
+                    href="YOUR_DISCORD_LINK"
+                    class="button"
+                >
+                    Join Discord
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="scroll">
+
+            Scroll
+
+            <div class="mouse"></div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ============================================================
+         FEATURES
+    ============================================================ -->
+
+    <section
+        class="content"
+        id="features"
+    >
+
+        <div class="section-label">
+            Silly Hack
+        </div>
+
+
+        <h2 class="section-title">
+            Surprisingly unserious.
+            Seriously customizable.
+        </h2>
+
+
+        <p class="section-subtitle">
+
+            Built around a modular interface so you can configure
+            everything without turning your screen into a 2009
+            Minecraft client.
+
+        </p>
+
+
+        <div class="features">
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    ✦
+                </div>
+
+                <h3>
+                    Visuals
+                </h3>
+
+                <p>
+                    Customize your game with visual controls,
+                    world settings, camera options and other
+                    client-side effects.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    ⚡
+                </div>
+
+                <h3>
+                    Performance
+                </h3>
+
+                <p>
+                    Fine-tune rendering and performance options
+                    to keep Clutcher.io running as smoothly as
+                    possible.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    ◈
+                </div>
+
+                <h3>
+                    Modular
+                </h3>
+
+                <p>
+                    Everything lives inside the Silly Hack GUI,
+                    with independent modules and configurable
+                    settings.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================================================
+         FOOTER
+    ============================================================ -->
+
+    <footer id="about">
+
+        <strong>Silly Hack</strong>
+        · made for Clutcher.io
+
+    </footer>
+
+
+    <script>
+
+        /*
+         * Slight parallax effect on the hero.
+         */
+
+        const hero = document.querySelector(".hero-content");
+
+        window.addEventListener("mousemove", (event) => {
+
+            if (window.innerWidth < 800)
+                return;
+
+            const x =
+                (event.clientX / window.innerWidth - 0.5) * 6;
+
+            const y =
+                (event.clientY / window.innerHeight - 0.5) * 6;
+
+            hero.style.transform =
+                `translate(${x}px, ${y}px)`;
+
+        });
+
+
+        /*
+         * Pause the background video if the tab
+         * isn't visible.
+         */
+
+        const backgroundVideo =
+            document.querySelector(".background video");
+
+        document.addEventListener(
+            "visibilitychange",
+            () => {
+
+                if (document.hidden) {
+                    backgroundVideo.pause();
+                } else {
+                    backgroundVideo.play();
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
