@@ -1,1346 +1,369 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Silly Hack — Clutcher.io</title>
-
-    <meta
-        name="description"
-        content="Silly Hack for Clutcher.io"
-    >
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg: #070907;
-            --glass: rgba(12, 15, 12, 0.55);
-            --border: rgba(255, 255, 255, 0.12);
-
-            --text: #ffffff;
-            --muted: rgba(255, 255, 255, 0.58);
-
-            --accent: #9cff57;
-            --accent2: #53ff8a;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            background: var(--bg);
-            color: var(--text);
-
-            overflow-x: hidden;
-        }
-
-        /* ============================================================
-           BACKGROUND VIDEO
-        ============================================================ */
-
-        .background {
-            position: fixed;
-
-            inset: 0;
-
-            width: 100%;
-            height: 100%;
-
-            z-index: -10;
-
-            overflow: hidden;
-
-            background: #050705;
-        }
-
-        .background video {
-            position: absolute;
-
-            top: 50%;
-            left: 50%;
-
-            min-width: 100%;
-            min-height: 100%;
-
-            width: auto;
-            height: auto;
-
-            transform:
-                translate(-50%, -50%)
-                scale(1.08);
-
-            object-fit: cover;
-
-            filter:
-                blur(12px)
-                brightness(0.48)
-                saturate(0.85);
-
-            opacity: 0.92;
-        }
-
-        /* Dark overlay */
-
-        .background::after {
-            content: "";
-
-            position: absolute;
-            inset: 0;
-
-            background:
-                radial-gradient(
-                    circle at 50% 45%,
-                    rgba(70, 150, 50, 0.08),
-                    transparent 40%
-                ),
-                linear-gradient(
-                    to bottom,
-                    rgba(0, 0, 0, 0.22),
-                    rgba(0, 0, 0, 0.65)
-                );
-
-            pointer-events: none;
-        }
-
-        /* ============================================================
-           GRAIN
-        ============================================================ */
-
-        .grain {
-            position: fixed;
-
-            inset: 0;
-
-            z-index: -5;
-
-            pointer-events: none;
-
-            opacity: 0.05;
-
-            background-image:
-                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-
-            background-repeat: repeat;
-        }
-
-        /* ============================================================
-           NAVBAR
-        ============================================================ */
-
-        nav {
-            position: fixed;
-
-            z-index: 100;
-
-            top: 24px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            width:
-                min(
-                    1100px,
-                    calc(100% - 40px)
-                );
-
-            display: flex;
-
-            align-items: center;
-            justify-content: space-between;
-
-            padding:
-                11px
-                12px
-                11px
-                20px;
-
-            border:
-                1px solid
-                var(--border);
-
-            border-radius: 18px;
-
-            background:
-                rgba(8, 10, 8, 0.55);
-
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-
-            box-shadow:
-                0 12px 50px rgba(0, 0, 0, 0.28),
-                inset 0 1px rgba(255, 255, 255, 0.04);
-        }
-
-        .logo {
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            font-size: 17px;
-            font-weight: 700;
-
-            letter-spacing: -0.5px;
-        }
-
-        .logo-icon {
-            height: 28px;
-            width: 28px;
-
-            display: grid;
-
-            place-items: center;
-
-            border-radius: 8px;
-
-            color: #071005;
-
-            font-weight: 900;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--accent),
-                    var(--accent2)
-                );
-
-            box-shadow:
-                0 0 25px
-                rgba(140, 255, 90, 0.18);
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .nav-links {
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-
-            color:
-                rgba(255, 255, 255, 0.7);
-
-            font-size: 14px;
-            font-weight: 500;
-
-            padding: 9px 14px;
-
-            border-radius: 10px;
-
-            transition:
-                color 0.2s ease,
-                background 0.2s ease,
-                transform 0.2s ease;
-        }
-
-        .nav-links a:hover {
-            color: white;
-
-            background:
-                rgba(255, 255, 255, 0.07);
-        }
-
-        .nav-links .nav-button {
-            color: #071005;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--accent),
-                    var(--accent2)
-                );
-
-            font-weight: 700;
-
-            box-shadow:
-                0 5px 25px
-                rgba(120, 255, 80, 0.15);
-        }
-
-        .nav-links .nav-button:hover {
-            color: #071005;
-
-            transform: translateY(-1px);
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #b6ff82,
-                    #6aff99
-                );
-
-            box-shadow:
-                0 8px 30px
-                rgba(120, 255, 80, 0.25);
-        }
-
-        /* ============================================================
-           HERO
-        ============================================================ */
-
-        .hero {
-            position: relative;
-
-            min-height: 100vh;
-
-            display: flex;
-
-            justify-content: center;
-            align-items: center;
-
-            text-align: center;
-
-            padding:
-                130px
-                24px
-                70px;
-        }
-
-        .hero-content {
-            max-width: 1000px;
-
-            animation:
-                appear
-                1s
-                cubic-bezier(.2,.8,.2,1);
-        }
-
-        @keyframes appear {
-            from {
-                opacity: 0;
-
-                transform:
-                    translateY(24px);
-            }
-
-            to {
-                opacity: 1;
-
-                transform:
-                    translateY(0);
-            }
-        }
-
-        .tag {
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            margin-bottom: 24px;
-
-            padding:
-                8px
-                13px;
-
-            border:
-                1px solid
-                rgba(156, 255, 87, 0.18);
-
-            border-radius: 999px;
-
-            color:
-                rgba(220, 255, 200, 0.92);
-
-            font-size: 13px;
-            font-weight: 600;
-
-            background:
-                rgba(70, 120, 40, 0.12);
-
-            backdrop-filter: blur(14px);
-        }
-
-        .tag-dot {
-            width: 7px;
-            height: 7px;
-
-            border-radius: 50%;
-
-            background: var(--accent);
-
-            box-shadow:
-                0 0 12px
-                var(--accent);
-        }
-
-        h1 {
-            font-size:
-                clamp(
-                    72px,
-                    11vw,
-                    160px
-                );
-
-            line-height: 0.85;
-
-            letter-spacing: -8px;
-
-            font-weight: 800;
-
-            text-shadow:
-                0 8px 50px
-                rgba(0, 0, 0, 0.4);
-        }
-
-        .clutcher {
-            margin-top: 23px;
-
-            color:
-                rgba(255, 255, 255, 0.52);
-
-            font-size:
-                clamp(
-                    16px,
-                    2vw,
-                    23px
-                );
-
-            font-weight: 500;
-
-            letter-spacing: 5px;
-
-            text-transform: uppercase;
-        }
-
-        .clutcher strong {
-            color: var(--accent);
-
-            font-weight: 650;
-        }
-
-        .description {
-            max-width: 620px;
-
-            margin:
-                27px
-                auto
-                0;
-
-            color: var(--muted);
-
-            font-size: 17px;
-
-            line-height: 1.7;
-        }
-
-        /* ============================================================
-           BUTTONS
-        ============================================================ */
-
-        .buttons {
-            margin-top: 37px;
-
-            display: flex;
-
-            justify-content: center;
-            align-items: center;
-
-            gap: 12px;
-
-            flex-wrap: wrap;
-        }
-
-        .button {
-            position: relative;
-
-            min-width: 190px;
-
-            padding:
-                15px
-                25px;
-
-            border-radius: 13px;
-
-            border:
-                1px solid
-                rgba(255, 255, 255, 0.14);
-
-            text-decoration: none;
-
-            font-size: 15px;
-            font-weight: 650;
-
-            color: white;
-
-            background:
-                rgba(255, 255, 255, 0.06);
-
-            backdrop-filter: blur(18px);
-
-            transition:
-                transform 0.2s ease,
-                background 0.2s ease,
-                border-color 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        .button:hover {
-            transform:
-                translateY(-2px);
-
-            background:
-                rgba(255, 255, 255, 0.1);
-
-            border-color:
-                rgba(255, 255, 255, 0.25);
-        }
-
-        .button.primary {
-            color: #081006;
-
-            border-color: transparent;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--accent),
-                    var(--accent2)
-                );
-
-            box-shadow:
-                0 8px 35px
-                rgba(105, 255, 85, 0.16);
-        }
-
-        .button.primary:hover {
-            box-shadow:
-                0 12px 50px
-                rgba(105, 255, 85, 0.28);
-        }
-
-        /* ============================================================
-           SCROLL INDICATOR
-        ============================================================ */
-
-        .scroll {
-            position: absolute;
-
-            bottom: 28px;
-            left: 50%;
-
-            transform:
-                translateX(-50%);
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            gap: 9px;
-
-            color:
-                rgba(255,255,255,.35);
-
-            font-size: 11px;
-
-            letter-spacing: 2px;
-
-            text-transform: uppercase;
-        }
-
-        .mouse {
-            width: 22px;
-            height: 34px;
-
-            border:
-                1px solid
-                rgba(255,255,255,.28);
-
-            border-radius: 20px;
-
-            position: relative;
-        }
-
-        .mouse::after {
-            content: "";
-
-            position: absolute;
-
-            top: 7px;
-            left: 50%;
-
-            width: 3px;
-            height: 7px;
-
-            border-radius: 3px;
-
-            background: var(--accent);
-
-            transform:
-                translateX(-50%);
-
-            animation:
-                scrollAnimation
-                1.8s
-                infinite;
-        }
-
-        @keyframes scrollAnimation {
-            0% {
-                opacity: 0;
-
-                transform:
-                    translate(
-                        -50%,
-                        -2px
-                    );
-            }
-
-            30% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-
-                transform:
-                    translate(
-                        -50%,
-                        8px
-                    );
-            }
-        }
-
-        /* ============================================================
-           CONTENT
-        ============================================================ */
-
-        .content {
-            min-height: 100vh;
-
-            position: relative;
-
-            padding:
-                120px
-                max(
-                    24px,
-                    calc(
-                        (100vw - 1100px) / 2
-                    )
-                );
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    rgba(6, 8, 6, 0.88),
-                    #070907
-                );
-
-            backdrop-filter: blur(15px);
-        }
-
-        .section-label {
-            color: var(--accent);
-
-            font-size: 12px;
-            font-weight: 700;
-
-            letter-spacing: 3px;
-
-            text-transform: uppercase;
-
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            font-size:
-                clamp(
-                    40px,
-                    6vw,
-                    70px
-                );
-
-            max-width: 700px;
-
-            line-height: 1;
-
-            letter-spacing: -3px;
-        }
-
-        .section-subtitle {
-            color: var(--muted);
-
-            margin-top: 20px;
-
-            max-width: 620px;
-
-            line-height: 1.7;
-
-            font-size: 16px;
-        }
-
-        /* ============================================================
-           FEATURE CARDS
-        ============================================================ */
-
-        .features {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 16px;
-
-            margin-top: 60px;
-        }
-
-        .feature {
-            min-height: 230px;
-
-            padding: 26px;
-
-            border-radius: 20px;
-
-            border:
-                1px solid
-                rgba(255, 255, 255, 0.08);
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(255,255,255,.055),
-                    rgba(255,255,255,.018)
-                );
-
-            backdrop-filter: blur(15px);
-
-            transition:
-                transform .25s ease,
-                border-color .25s ease,
-                background .25s ease;
-        }
-
-        .feature:hover {
-            transform:
-                translateY(-5px);
-
-            border-color:
-                rgba(156, 255, 87, 0.22);
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(156,255,87,.07),
-                    rgba(255,255,255,.025)
-                );
-        }
-
-        .feature-icon {
-            width: 42px;
-            height: 42px;
-
-            border-radius: 11px;
-
-            display: grid;
-
-            place-items: center;
-
-            margin-bottom: 35px;
-
-            background:
-                rgba(156, 255, 87, 0.1);
-
-            border:
-                1px solid
-                rgba(156, 255, 87, 0.14);
-
-            color: var(--accent);
-
-            font-size: 20px;
-        }
-
-        .feature h3 {
-            font-size: 19px;
-
-            margin-bottom: 10px;
-        }
-
-        .feature p {
-            color: var(--muted);
-
-            line-height: 1.65;
-
-            font-size: 14px;
-        }
-
-        /* ============================================================
-           JOIN SECTION
-        ============================================================ */
-
-        .join {
-            padding:
-                120px
-                24px;
-
-            text-align: center;
-
-            background:
-                radial-gradient(
-                    circle at center,
-                    rgba(100,255,70,.06),
-                    transparent 45%
-                ),
-                #070907;
-        }
-
-        .join-inner {
-            max-width: 750px;
-
-            margin: auto;
-
-            padding:
-                60px
-                30px;
-
-            border:
-                1px solid
-                rgba(255,255,255,.08);
-
-            border-radius: 28px;
-
-            background:
-                rgba(255,255,255,.025);
-
-            backdrop-filter:
-                blur(20px);
-        }
-
-        .join h2 {
-            font-size:
-                clamp(
-                    40px,
-                    6vw,
-                    70px
-                );
-
-            letter-spacing: -3px;
-        }
-
-        .join p {
-            margin:
-                20px
-                auto
-                0;
-
-            max-width: 550px;
-
-            color: var(--muted);
-
-            line-height: 1.7;
-        }
-
-        .join .button {
-            margin-top: 30px;
-        }
-
-        /* ============================================================
-           FOOTER
-        ============================================================ */
-
-        footer {
-            padding:
-                40px
-                25px;
-
-            text-align: center;
-
-            border-top:
-                1px solid
-                rgba(255,255,255,.06);
-
-            background: #070907;
-
-            color:
-                rgba(255,255,255,.35);
-
-            font-size: 13px;
-        }
-
-        footer strong {
-            color:
-                rgba(255,255,255,.7);
-        }
-
-        /* ============================================================
-           MOBILE
-        ============================================================ */
-
-        @media (max-width: 800px) {
-
-            nav {
-                top: 15px;
-            }
-
-            .nav-links a:not(.nav-button) {
-                display: none;
-            }
-
-            h1 {
-                letter-spacing: -5px;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-            }
-
-            .description {
-                font-size: 15px;
-            }
-
-        }
-
-        @media (max-width: 500px) {
-
-            h1 {
-                font-size: 68px;
-
-                letter-spacing: -4px;
-            }
-
-            .button {
-                width: 100%;
-            }
-
-            .buttons {
-                width: 100%;
-            }
-
-            nav {
-                width:
-                    calc(
-                        100% - 24px
-                    );
-            }
-
-        }
-
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#121212">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Meet Silly V2 for Clutcher.io: an updated modular client with viewmodel customization, custom character models, world weather, fog, movement tools, and more.">
+  <meta property="og:title" content="Silly V2 — A new look. More ways to play.">
+  <meta property="og:description" content="Silly V2 brings a new interface, custom viewmodels, animated weather, world effects, and more to Clutcher.io.">
+  <meta property="og:type" content="website">
+  <title>Silly V2 — Clutcher.io Client</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #121212;
+      --bg-deep: #0b0b0c;
+      --surface: #19191b;
+      --surface-raised: #202023;
+      --line: rgba(255,255,255,.085);
+      --line-strong: rgba(255,255,255,.15);
+      --red: #ff3b4a;
+      --red-light: #ff7180;
+      --red-dark: #bc2936;
+      --text: #f7f7f8;
+      --muted: #a3a3aa;
+      --faint: #73737c;
+      --radius: 20px;
+      --max: 1170px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    body::before { content: ''; position: absolute; inset: 0 0 auto; height: 900px; pointer-events: none; z-index: -1; background: radial-gradient(ellipse 56% 42% at 73% 16%, rgba(255,59,74,.115), transparent 75%), radial-gradient(ellipse 44% 40% at 20% 30%, rgba(120,21,34,.07), transparent 80%); }
+    ::selection { background: var(--red); color: #fff; }
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible { outline: 2px solid var(--red-light); outline-offset: 4px; }
+    .video-backdrop { position: absolute; inset: 0 0 auto 0; height: 730px; overflow: hidden; z-index: -2; pointer-events: none; background: var(--bg); }
+    .video-backdrop video { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(.27) blur(5px); opacity: .26; }
+    .video-backdrop::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(18,18,18,.7), rgba(18,18,18,.28) 50%, rgba(18,18,18,.72)), linear-gradient(0deg, var(--bg) 0%, transparent 42%, rgba(18,18,18,.6)); }
+    .container { width: min(var(--max), calc(100% - 48px)); margin-inline: auto; }
+    .topbar { position: relative; z-index: 50; padding: 22px 0 0; }
+    .nav-shell { display: flex; align-items: center; justify-content: space-between; min-height: 68px; gap: 20px; padding: 10px 12px 10px 19px; border: 1px solid var(--line-strong); border-radius: 16px; background: rgba(25,25,27,.88); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: 0 20px 60px rgba(0,0,0,.18); }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; white-space: nowrap; font-size: 17px; font-weight: 830; letter-spacing: -.055em; }
+    .brand-icon { width: 38px; height: 38px; display: grid; place-items: center; background: var(--red); color: #fff; border-radius: 10px; font-size: 22px; font-style: italic; font-weight: 950; box-shadow: 0 0 0 3px rgba(255,59,74,.11); }
+    .brand .v2 { color: var(--red-light); margin-left: 3px; }
+    .nav-right { display: flex; align-items: center; gap: 9px; }
+    .nav-link { text-decoration: none; font-size: 13px; font-weight: 620; color: #c1c1c6; padding: 12px 14px; transition: color .2s; }
+    .nav-link:hover { color: white; }
+    .nav-cta { display: inline-flex; justify-content: center; align-items: center; min-height: 42px; padding: 0 18px; gap: 10px; text-decoration: none; background: var(--red); font-size: 13px; font-weight: 790; border-radius: 10px; color: white; transition: background .2s, transform .2s, box-shadow .2s; }
+    .nav-cta:hover, .btn-red:hover { background: #f12238; box-shadow: 0 8px 34px rgba(255,59,74,.21); transform: translateY(-2px); }
+    .nav-cta svg, .btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .hero { padding: 111px 0 98px; position: relative; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0,1.01fr) minmax(0,.99fr); align-items: center; gap: 54px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; color: #ffd0d4; font-size: 11px; letter-spacing: .125em; text-transform: uppercase; font-weight: 780; background: rgba(255,59,74,.075); border: 1px solid rgba(255,78,91,.23); border-radius: 999px; }
+    .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 12px rgba(255,59,74,.7); }
+    h1 { font-size: clamp(62px, 6.8vw, 104px); line-height: .98; letter-spacing: -.089em; margin: 27px 0 22px; font-weight: 860; }
+    h1 .red { display: block; color: var(--red); }
+    .hero-copy { color: #bdbdc3; font-size: clamp(15px, 1.45vw, 17px); line-height: 1.8; max-width: 485px; margin: 0; }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 11px; text-decoration: none; font-size: 14px; font-weight: 760; min-height: 51px; padding: 0 20px; border-radius: 11px; transition: background .2s, transform .2s, box-shadow .2s, border-color .2s; }
+    .btn-red { background: var(--red); border: 1px solid var(--red); color: #fff; }
+    .btn-outline { border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.035); color: #f3f3f3; }
+    .btn-outline:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.07); transform: translateY(-2px); }
+    .hero-quick { margin-top: 45px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; color: #82828b; font-size: 12px; font-weight: 640; }
+    .hero-quick span { display: inline-flex; align-items: center; gap: 8px; }
+    .hero-quick b { color: #dedee1; font-weight: 750; }
+    .hero-quick .dot-sep { width: 3px; height: 3px; border-radius: 50%; background: #56565e; }
+    .hero-preview { position: relative; min-width: 0; padding: 12px 0; }
+    .hero-preview::before { content: ''; position: absolute; inset: 11% -4% 3% 0; background: radial-gradient(ellipse, rgba(255,59,74,.2), transparent 63%); filter: blur(22px); pointer-events: none; }
+    .preview-glow { position: absolute; right: -12px; top: -8px; font-size: 11px; letter-spacing: .18em; font-weight: 760; text-transform: uppercase; color: #6e6e76; }
+    .client { position: relative; width: 100%; border: 1px solid #3a292f; background: #171719; border-radius: 15px; overflow: hidden; box-shadow: 0 28px 90px rgba(0,0,0,.58), 0 0 0 1px rgba(255,59,74,.09), 0 0 74px rgba(255,59,74,.07); transform: rotate(1.3deg); }
+    .client-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: #1d1d20; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .client-header strong { font-size: 15px; font-weight: 810; letter-spacing: -.04em; }
+    .client-header strong span { color: var(--red); }
+    .window-actions { display: flex; gap: 6px; }
+    .window-actions i { display: block; width: 7px; height: 7px; background: #4d4d54; border-radius: 50%; }
+    .window-actions i:last-child { background: var(--red); }
+    .client-inner { display: grid; grid-template-columns: 124px minmax(0,1fr); height: 403px; }
+    .client-tabs { padding: 13px 9px; border-right: 1px solid #303035; display: flex; flex-direction: column; gap: 5px; background: #141416; }
+    .client-tab { border: 1px solid transparent; display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 10px; text-align: left; color: #85858e; background: transparent; border-radius: 7px; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; transition: background .2s, color .2s; }
+    .client-tab svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .client-tab[aria-selected="true"] { color: #fff; border-color: rgba(255,59,74,.17); background: rgba(255,59,74,.12); }
+    .client-tab[aria-selected="true"] svg { stroke: var(--red); }
+    .client-tab:hover:not([aria-selected="true"]) { background: #252529; color: #ddd; }
+    .client-content { padding: 20px 17px; overflow: auto; scrollbar-color: #424249 transparent; scrollbar-width: thin; }
+    .client-panel-title { margin: 0; font-size: 18px; font-weight: 810; letter-spacing: -.04em; }
+    .client-panel-sub { font-size: 10px; color: #7f7f89; margin: 4px 0 17px; }
+    .module-list { display: flex; flex-direction: column; gap: 8px; }
+    .module-row { padding: 12px 12px 11px; background: #202023; border: 1px solid #303035; border-radius: 9px; }
+    .module-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .module-heading strong { font-size: 11px; font-weight: 750; color: #ececef; }
+    .module-heading-right { display: flex; align-items: center; gap: 9px; }
+    .module-bind { font-size: 9px; color: #aaa; background: #29292d; border: 1px solid #3a3a41; padding: 3px 7px; border-radius: 5px; letter-spacing: .05em; }
+    .module-toggle { width: 26px; height: 14px; border-radius: 100px; background: #4b4b52; display: inline-flex; align-items: center; padding: 2px; }
+    .module-toggle.on { background: var(--red); justify-content: flex-end; }
+    .module-toggle::after { content: ''; height: 10px; width: 10px; background: #f9f9fa; border-radius: 50%; }
+    .module-desc { font-size: 10px; color: #8a8a94; line-height: 1.5; margin: 5px 0 0; }
+    .client-footer { background: #131315; border-top: 1px solid #2b2b30; color: #777782; padding: 10px 18px; font-size: 10px; letter-spacing: .08em; display: flex; justify-content: space-between; text-transform: uppercase; }
+    .client-footer span:last-child { color: var(--red-light); }
+    .tiny-label { position: absolute; bottom: -12px; left: 8px; background: #252529; border: 1px solid #3a3436; padding: 10px 13px; border-radius: 9px; color: #eaeaea; font-size: 11px; font-weight: 720; transform: rotate(-1.3deg); box-shadow: 0 12px 30px rgba(0,0,0,.22); }
+    .tiny-label .mini-dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--red); }
+    .strip { border-block: 1px solid var(--line); background: #171719; }
+    .strip-grid { min-height: 104px; display: grid; grid-template-columns: repeat(4,1fr); align-items: center; }
+    .strip-item { padding: 13px 25px; border-left: 1px solid var(--line); }
+    .strip-item:first-child { padding-left: 0; border-left: 0; }
+    .strip-item strong { display: block; font-size: 14px; font-weight: 780; letter-spacing: -.02em; }
+    .strip-item p { font-size: 11px; color: var(--faint); margin: 6px 0 0; }
+    .section { padding: 118px 0 0; }
+    .section-kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--red-light); }
+    .section-kicker::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--red); }
+    h2 { font-size: clamp(37px, 4.8vw, 60px); line-height: 1.06; font-weight: 825; letter-spacing: -.065em; margin: 18px 0 16px; }
+    .section-intro { max-width: 590px; font-size: 15px; line-height: 1.85; color: var(--muted); margin: 0; }
+    .features-grid { margin-top: 47px; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+    .feature { min-height: 265px; padding: 28px 27px; border: 1px solid var(--line); border-radius: 16px; background: #1a1a1c; position: relative; overflow: hidden; transition: transform .25s ease, border-color .25s ease, background .25s ease; }
+    .feature:hover { transform: translateY(-4px); border-color: rgba(255,59,74,.34); background: #1e1d20; }
+    .feature::after { content: ''; width: 130px; height: 130px; background: radial-gradient(circle,rgba(255,59,74,.08),transparent 70%); position: absolute; right: -55px; top: -56px; pointer-events: none; }
+    .feature-icon { display: inline-grid; place-items: center; width: 43px; height: 43px; border: 1px solid rgba(255,59,74,.21); background: rgba(255,59,74,.09); border-radius: 11px; color: var(--red-light); margin-bottom: 33px; }
+    .feature-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .feature h3 { margin: 0 0 11px; font-size: 19px; letter-spacing: -.04em; }
+    .feature p { font-size: 13px; line-height: 1.8; color: var(--muted); margin: 0; }
+    .feature .pill { margin-top: 19px; display: inline-block; border: 1px solid #3d3034; border-radius: 6px; padding: 5px 8px; color: #dc9da4; font-size: 10px; font-weight: 700; }
+    .spotlight { margin-top: 113px; display: grid; grid-template-columns: minmax(0,.95fr) minmax(0,1.05fr); gap: 70px; align-items: center; padding: 43px 45px; border-radius: 22px; background: linear-gradient(115deg, #211719, #19191b 55%, #1c1b1d); border: 1px solid #3b292e; }
+    .spotlight h2 { font-size: clamp(32px, 3.5vw, 44px); }
+    .spotlight .section-intro { font-size: 14px; }
+    .weather-display { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .weather-card { min-height: 189px; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; border: 1px solid #383036; border-radius: 13px; background: #1f1e21; }
+    .weather-card:nth-child(2) { background: #201c20; }
+    .weather-card:nth-child(3) { background: #201b1f; }
+    .weather-signal { position: relative; height: 114px; overflow: hidden; }
+    .weather-signal .drop { position: absolute; width: 2px; height: 18px; background: #ea8d96; opacity: .8; border-radius: 3px; transform: rotate(14deg); }
+    .weather-signal .flake { position: absolute; display: block; width: 5px; height: 5px; border-radius: 50%; background: #f5f5ff; opacity: .7; }
+    .weather-signal .orb { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #ff7085; filter: blur(1px); box-shadow: 0 0 14px #ff5068; }
+    .weather-card strong { font-size: 12px; color: #ececee; }
+    .weather-card span.meta { font-size: 10px; color: #797980; margin-top: 3px; display: block; }
+    .changelog { margin-top: 49px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .change { padding: 23px 24px; border-radius: 14px; border: 1px solid var(--line); background: #1b1b1d; }
+    .change-number { color: var(--red-light); font-weight: 850; font-size: 11px; letter-spacing: .1em; }
+    .change h3 { font-size: 16px; margin: 13px 0 9px; }
+    .change p { font-size: 13px; color: var(--muted); line-height: 1.7; margin: 0; }
+    .cta-section { padding: 120px 0 115px; }
+    .cta-box { border: 1px solid rgba(255,59,74,.31); border-radius: 23px; background: radial-gradient(ellipse 50% 100% at 100% 0%,rgba(255,59,74,.12),transparent 100%), #1c191c; padding: 62px 65px; display: flex; align-items: center; justify-content: space-between; gap: 35px; }
+    .cta-box h2 { max-width: 520px; margin-bottom: 11px; }
+    .cta-box p { max-width: 500px; color: var(--muted); font-size: 14px; line-height: 1.7; margin: 0; }
+    footer { border-top: 1px solid var(--line); padding: 31px 0; background: #101011; }
+    .footer-grid { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .foot-brand { color: #ececee; font-size: 15px; font-weight: 820; letter-spacing: -.04em; }
+    .foot-brand span { color: var(--red-light); }
+    .foot-note { color: #777780; font-size: 12px; line-height: 1.6; }
+    .foot-link { color: #bcbcc3; text-decoration: none; font-size: 12px; }
+    .foot-link:hover { color: var(--red-light); }
+    @media (max-width: 1090px) {
+      .hero-grid { gap: 30px; }
+      .client-inner { grid-template-columns: 105px 1fr; }
+      .client-tab { padding-inline: 7px; }
+      .hero { padding-top: 90px; }
+      h1 { font-size: clamp(56px, 7.1vw, 85px); }
+      .spotlight { gap: 28px; padding: 35px; }
+    }
+    @media (max-width: 800px) {
+      .container { width: min(var(--max), calc(100% - 36px)); }
+      .topbar { padding-top: 13px; }
+      .nav-link { display: none; }
+      .hero { padding: 85px 0 83px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 75px; }
+      .hero-copy { max-width: 590px; }
+      .hero-preview { width: min(550px, 100%); margin-inline: auto; }
+      .strip-grid { grid-template-columns: repeat(2,1fr); padding-block: 12px; }
+      .strip-item:nth-child(3) { border-left: 0; padding-left: 0; }
+      .features-grid { grid-template-columns: repeat(2,1fr); }
+      .spotlight { grid-template-columns: 1fr; }
+      .weather-display { max-width: 540px; }
+      .changelog { grid-template-columns: 1fr; }
+      .cta-box { padding: 45px; }
+    }
+    @media (max-width: 540px) {
+      .container { width: calc(100% - 28px); }
+      .brand { font-size: 16px; }
+      .nav-shell { padding-left: 12px; }
+      .nav-cta { font-size: 12px; padding-inline: 12px; }
+      .hero { padding-top: 74px; }
+      h1 { font-size: clamp(62px, 15vw, 78px); }
+      .hero-ctas .btn { flex: 1 1 100%; }
+      .hero-quick { gap: 12px; }
+      .hero-quick .dot-sep { display: none; }
+      .client { transform: none; }
+      .client-inner { grid-template-columns: 103px 1fr; height: 400px; }
+      .client-content { padding: 15px 11px; }
+      .client-tab { font-size: 10px; gap: 5px; }
+      .client-tab svg { width: 11px; }
+      .module-desc { font-size: 9px; }
+      .module-row { padding: 10px; }
+      .client-header { padding: 13px 15px; }
+      .strip-item { padding: 14px 12px; }
+      .strip-item strong { font-size: 12px; }
+      .section { padding-top: 86px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .feature { min-height: 0; }
+      .spotlight { margin-top: 87px; padding: 28px 20px; }
+      .weather-display { gap: 7px; }
+      .weather-card { padding: 10px; min-height: 160px; }
+      .weather-signal { height: 100px; }
+      .weather-card strong { font-size: 11px; }
+      .cta-section { padding: 90px 0; }
+      .cta-box { flex-direction: column; align-items: flex-start; padding: 39px 26px; }
+      .cta-box .btn { width: 100%; }
+      .foot-note { order: 3; width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
+  </style>
 </head>
-
 <body>
+  <!-- Keep background.mp4 beside index.html. The site works without it. -->
+  <div class="video-backdrop" aria-hidden="true"><video autoplay muted loop playsinline preload="none"><source src="background.mp4" type="video/mp4"></video></div>
 
-    <!-- ============================================================
-         BACKGROUND VIDEO
-    ============================================================ -->
-
-    <div class="background">
-
-        <video
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-        >
-            <source
-                src="background.mp4"
-                type="video/mp4"
-            >
-        </video>
-
+  <header class="topbar">
+    <div class="container">
+      <nav class="nav-shell" aria-label="Main navigation">
+        <a class="brand" href="#top" aria-label="Silly V2 home"><span class="brand-icon">S</span><span>Silly<span class="v2">V2</span></span></a>
+        <div class="nav-right">
+          <a class="nav-link" href="#features">Features</a>
+          <a class="nav-link" href="#world">World</a>
+          <a class="nav-link" href="#whats-new">What's New</a>
+          <a class="nav-cta" href="https://discord.gg/K7xzQRtJP3" target="_blank" rel="noopener noreferrer">Join Discord
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          </a>
+        </div>
+      </nav>
     </div>
+  </header>
 
-    <div class="grain"></div>
-
-
-    <!-- ============================================================
-         NAVIGATION
-    ============================================================ -->
-
-    <nav>
-
-        <div class="logo">
-
-            <div class="logo-icon">
-                S
-            </div>
-
-            Silly<span>Hack</span>
-
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <div class="eyebrow"><span class="status-dot"></span> Clutcher.io client · Version 2</div>
+          <h1 id="hero-title">Stay a little <span class="red">Silly.</span></h1>
+          <p class="hero-copy">Silly V2 is a complete refresh of the client you know. A cleaner interface, deeper viewmodel controls, custom character models, animated weather, and an absurd amount of things to tweak.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-red" href="https://discord.gg/K7xzQRtJP3" target="_blank" rel="noopener noreferrer">Get Silly <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <a class="btn btn-outline" href="#features">Explore V2 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></a>
+          </div>
+          <div class="hero-quick"><span><b>06</b> organized tabs</span><i class="dot-sep"></i><span><b>03</b> weather types</span><i class="dot-sep"></i><span>Built for <b>Clutcher.io</b></span></div>
         </div>
-
-
-        <div class="nav-links">
-
-            <a href="#features">
-                Features
-            </a>
-
-            <a href="#about">
-                About
-            </a>
-
-            <a
-                href="https://discord.gg/K7xzQRtJP3"
-                class="nav-button"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Get Silly
-            </a>
-
-        </div>
-
-    </nav>
-
-
-    <!-- ============================================================
-         HERO
-    ============================================================ -->
-
-    <main class="hero">
-
-        <div class="hero-content">
-
-            <div class="tag">
-
-                <div class="tag-dot"></div>
-
-                Clutcher.io
-
-            </div>
-
-
-            <h1>
-                Silly Hack
-            </h1>
-
-
-            <div class="clutcher">
-
-                built for
-
-                <strong>
-                    clutcher.io
-                </strong>
-
-            </div>
-
-
-            <p class="description">
-
-                A ridiculously configurable client with
-                visuals, movement tools, performance controls
-                and way too many silly options.
-
-                Join the community to grab the latest release.
-
-            </p>
-
-
-            <div class="buttons">
-
-                <a
-                    href="https://discord.gg/K7xzQRtJP3"
-                    class="button primary"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Get Silly
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <div class="scroll">
-
-            Scroll
-
-            <div class="mouse"></div>
-
-        </div>
-
-    </main>
-
-
-    <!-- ============================================================
-         FEATURES
-    ============================================================ -->
-
-    <section
-        class="content"
-        id="features"
-    >
-
-        <div class="section-label">
-            Silly Hack
-        </div>
-
-
-        <h2 class="section-title">
-
-            Surprisingly unserious.
-            Seriously customizable.
-
-        </h2>
-
-
-        <p class="section-subtitle">
-
-            Built around a modular interface that keeps everything
-            clean, configurable and easy to use without cluttering
-            your screen.
-
-        </p>
-
-
-        <div class="features">
-
-            <div class="feature">
-
-                <div class="feature-icon">
-                    ✦
+        <div class="hero-preview" aria-label="Interactive preview of the Silly V2 module layout">
+          <span class="preview-glow" aria-hidden="true">UI Preview · V2</span>
+          <div class="client">
+            <div class="client-header"><strong>Silly<span> V2</span></strong><div class="window-actions" aria-hidden="true"><i></i><i></i><i></i></div></div>
+            <div class="client-inner">
+              <div class="client-tabs" role="tablist" aria-label="Client preview categories">
+                <button type="button" class="client-tab" role="tab" data-panel="Legit" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>Legit</button>
+                <button type="button" class="client-tab" role="tab" data-panel="Rage" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M12 2 5 13h6l-1 9 9-13h-7z"/></svg>Rage</button>
+                <button type="button" class="client-tab" role="tab" data-panel="Visuals" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M2 12s3.8-7 10-7 10 7 10 7-3.8 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>Visuals</button>
+                <button type="button" class="client-tab" role="tab" data-panel="Movement" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 17h6l3-5 4 3 5-8M16 7h5v5"/></svg>Movement</button>
+                <button type="button" class="client-tab" role="tab" data-panel="Misc" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M12 3v18m-9-9h18M5.6 5.6l12.8 12.8m0-12.8L5.6 18.4"/></svg>Misc</button>
+                <button type="button" class="client-tab" role="tab" data-panel="Settings" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9 7 7m10 10 2.1 2.1m0-14.2L17 7M7 17l-2.1 2.1"/></svg>Settings</button>
+              </div>
+              <div class="client-content" role="tabpanel" id="preview-content" aria-live="polite">
+                <h2 class="client-panel-title" id="preview-title">Visuals</h2>
+                <p class="client-panel-sub" id="preview-sub">Customize the way your game looks.</p>
+                <div class="module-list" id="module-list">
+                  <div class="module-row"><div class="module-heading"><strong>Viewmodel</strong><span class="module-heading-right"><span class="module-bind">···</span><span class="module-toggle on"></span></span></div><p class="module-desc">FOV, XYZ offsets, arms and weapon chams.</p></div>
+                  <div class="module-row"><div class="module-heading"><strong>Player Model</strong><span class="module-heading-right"><span class="module-bind">···</span><span class="module-toggle"></span></span></div><p class="module-desc">Import custom .glb models with rig retargeting.</p></div>
+                  <div class="module-row"><div class="module-heading"><strong>World Settings</strong><span class="module-heading-right"><span class="module-bind">···</span><span class="module-toggle on"></span></span></div><p class="module-desc">Day / Night, fog, rain, snow and particles.</p></div>
+                  <div class="module-row"><div class="module-heading"><strong>Bone ESP &amp; Arrow ESP</strong><span class="module-heading-right"><span class="module-bind">···</span><span class="module-toggle"></span></span></div><p class="module-desc">Configurable player visual indicators.</p></div>
+                  <div class="module-row"><div class="module-heading"><strong>Third Person</strong><span class="module-heading-right"><span class="module-bind">···</span><span class="module-toggle"></span></span></div><p class="module-desc">Camera controls and player viewing distance.</p></div>
                 </div>
-
-                <h3>
-                    Visuals
-                </h3>
-
-                <p>
-
-                    Customize your game with visual controls,
-                    world settings, camera options and other
-                    client-side effects.
-
-                </p>
-
+              </div>
             </div>
-
-
-            <div class="feature">
-
-                <div class="feature-icon">
-                    ⚡
-                </div>
-
-                <h3>
-                    Performance
-                </h3>
-
-                <p>
-
-                    Fine-tune rendering and performance options
-                    to keep Clutcher.io running as smoothly as
-                    possible.
-
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="feature-icon">
-                    ◈
-                </div>
-
-                <h3>
-                    Modular
-                </h3>
-
-                <p>
-
-                    Everything lives inside the Silly Hack GUI,
-                    with independent modules and configurable
-                    settings.
-
-                </p>
-
-            </div>
-
+            <div class="client-footer"><span>Modular. Customizable. Silly.</span><span>Silly V2</span></div>
+          </div>
+          <div class="tiny-label"><span class="mini-dot"></span>New look. Same energy.</div>
         </div>
-
+      </div>
     </section>
 
+    <div class="strip" aria-label="Silly V2 highlights"><div class="container strip-grid"><div class="strip-item"><strong>Custom Viewmodels</strong><p>FOV, XYZ positioning &amp; chams</p></div><div class="strip-item"><strong>Dynamic Weather</strong><p>Rain, snow &amp; floating particles</p></div><div class="strip-item"><strong>Custom Characters</strong><p>GLB import &amp; rig retargeting</p></div><div class="strip-item"><strong>Clean by design</strong><p>Collapsible modules &amp; keybinds</p></div></div></div>
 
-    <!-- ============================================================
-         GET SILLY / ABOUT
-    ============================================================ -->
-
-    <section
-        class="join"
-        id="about"
-    >
-
-        <div class="join-inner">
-
-            <div class="section-label">
-                Community
-            </div>
-
-            <h2>
-                Get Silly.
-            </h2>
-
-            <p>
-
-                Releases, updates and downloads are available
-                through the Silly Hack Discord server.
-
-            </p>
-
-            <a
-                href="https://discord.gg/K7xzQRtJP3"
-                class="button primary"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Get Silly
-            </a>
-
+    <section class="section" id="features" aria-labelledby="features-title">
+      <div class="container">
+        <span class="section-kicker">A lot under the hood</span>
+        <h2 id="features-title">Everything in its place.<br>Everything yours to tweak.</h2>
+        <p class="section-intro">V2 puts the important stuff where it belongs. Independent modules, saved settings, and a redesigned GUI make it easy to get exactly the look and feel you want.</p>
+        <div class="features-grid">
+          <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3 8h18M3 16h18M8 4v8m8 0v8M12 12v8"/></svg></div><h3>Viewmodel studio</h3><p>Fine-tune your first-person viewmodel FOV, X/Y/Z position, arm brightness up to 300%, opacity, and material tint.</p><span class="pill">Visuals</span></article>
+          <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21v-3l4-4h6l4 4v3M9 14l-2-4M15 14l2-4"/></svg></div><h3>Custom player models</h3><p>Import your own rigged .glb character, adjust its size and position, and use experimental bone retargeting for Third Person.</p><span class="pill">Visuals · Third Person</span></article>
+          <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3 12s4-6 9-6 9 6 9 6-4 6-9 6-9-6-9-6Z"/><circle cx="12" cy="12" r="2.5"/></svg></div><h3>Player visuals</h3><p>Bone ESP, off-screen Arrow ESP, health, names, and weapon information in a dedicated Visuals category.</p><span class="pill">Visuals</span></article>
+          <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="m3 18 6-6 4 4 8-10M15 6h6v6"/></svg></div><h3>Movement tools</h3><p>Auto Bhop and Auto Strafe with WASD, Legit, and Rage modes, plus customizable movement speed controls.</p><span class="pill">Movement</span></article>
+          <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M6 6l12 12M18 6 6 18"/><circle cx="12" cy="12" r="5"/></svg></div><h3>Combat controls</h3><p>Silent Aim, Rage Bot targeting, Crouch Peek, Rapid Fire, Anti Aim, and Fake Lag / Freeze controls.</p><span class="pill">Legit · Rage</span></article>
+          <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 9l12-2"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><h3>Make it yours</h3><p>Custom kill hitsounds, importable configs, module keybinds, collapsible cards, and persistent settings.</p><span class="pill">Misc · Settings</span></article>
         </div>
-
+      </div>
     </section>
 
+    <section class="container" id="world" aria-labelledby="world-title">
+      <div class="spotlight">
+        <div><span class="section-kicker">World settings</span><h2 id="world-title">Change the entire atmosphere.</h2><p class="section-intro">Flip between Day and Night, tune distance or atmospheric fog, and choose your own weather. Rain interacts with map surfaces, snow drifts gently, and glowing particles float through the world.</p></div>
+        <div class="weather-display" aria-label="Three available custom world effects">
+          <div class="weather-card"><div class="weather-signal" aria-hidden="true"><i class="drop" style="left:15%;top:6%"></i><i class="drop" style="left:48%;top:29%"></i><i class="drop" style="left:73%;top:10%"></i><i class="drop" style="left:28%;top:56%"></i><i class="drop" style="left:86%;top:66%"></i><i class="drop" style="left:60%;top:79%"></i></div><div><strong>Rain</strong><span class="meta">World-aware</span></div></div>
+          <div class="weather-card"><div class="weather-signal" aria-hidden="true"><i class="flake" style="left:16%;top:10%"></i><i class="flake" style="left:52%;top:27%"></i><i class="flake" style="left:76%;top:8%"></i><i class="flake" style="left:25%;top:65%"></i><i class="flake" style="left:90%;top:72%"></i><i class="flake" style="left:66%;top:86%"></i></div><div><strong>Snow</strong><span class="meta">Soft drift</span></div></div>
+          <div class="weather-card"><div class="weather-signal" aria-hidden="true"><i class="orb" style="left:17%;top:10%;transform:scale(.6)"></i><i class="orb" style="left:61%;top:28%;transform:scale(.85)"></i><i class="orb" style="left:73%;top:70%;transform:scale(.5)"></i><i class="orb" style="left:22%;top:75%;transform:scale(.7)"></i></div><div><strong>Particles</strong><span class="meta">Floating orbs</span></div></div>
+        </div>
+      </div>
+    </section>
 
-    <!-- ============================================================
-         FOOTER
-    ============================================================ -->
+    <section class="section" id="whats-new" aria-labelledby="new-title">
+      <div class="container"><span class="section-kicker">The V2 refresh</span><h2 id="new-title">Built different this time.</h2><p class="section-intro">An updated interface is only part of the story. These are some of the bigger changes across Silly V2.</p>
+        <div class="changelog"><article class="change"><span class="change-number">01 / INTERFACE</span><h3>A proper module layout</h3><p>Cleaner navigation across Legit, Rage, Visuals, Movement, Misc, and Settings. Less clutter, more control.</p></article><article class="change"><span class="change-number">02 / CUSTOMIZATION</span><h3>Go beyond ordinary skins</h3><p>Viewmodel position and FOV, a custom GLB player model importer, and advanced per-material visual settings.</p></article><article class="change"><span class="change-number">03 / WORLD</span><h3>Weather that belongs in the map</h3><p>Native-depth fog, a darker nighttime scene, and custom rain, snow, and floating particle effects.</p></article></div>
+      </div>
+    </section>
 
-    <footer>
+    <section class="cta-section" id="community" aria-labelledby="cta-title"><div class="container"><div class="cta-box"><div><span class="section-kicker">The Silly community</span><h2 id="cta-title">Ready to get Silly?</h2><p>Join the Discord for release information, updates, and downloads. The project keeps evolving—V2 is just getting started.</p></div><a class="btn btn-red" href="https://discord.gg/K7xzQRtJP3" target="_blank" rel="noopener noreferrer">Join the Discord <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div></div></section>
+  </main>
 
-        <strong>
-            Silly Hack
-        </strong>
-
-        · made for Clutcher.io
-
-    </footer>
-
-
-    <!-- ============================================================
-         SCRIPT
-    ============================================================ -->
-
-    <script>
-
-        const hero =
-            document.querySelector(
-                ".hero-content"
-            );
-
-        const backgroundVideo =
-            document.querySelector(
-                ".background video"
-            );
-
-
-        /*
-         * Very slight mouse movement.
-         */
-
-        window.addEventListener(
-            "mousemove",
-            (event) => {
-
-                if (
-                    window.innerWidth < 800
-                ) {
-                    return;
-                }
-
-                const x =
-                    (
-                        event.clientX /
-                        window.innerWidth
-                        - 0.5
-                    ) * 5;
-
-                const y =
-                    (
-                        event.clientY /
-                        window.innerHeight
-                        - 0.5
-                    ) * 5;
-
-                hero.style.transform =
-                    `translate(${x}px, ${y}px)`;
-
-            }
-        );
-
-
-        /*
-         * Return to center when mouse leaves.
-         */
-
-        document.addEventListener(
-            "mouseleave",
-            () => {
-
-                hero.style.transform =
-                    "translate(0px, 0px)";
-
-            }
-        );
-
-
-        /*
-         * Pause the background video when
-         * the browser tab isn't visible.
-         */
-
-        document.addEventListener(
-            "visibilitychange",
-            () => {
-
-                if (
-                    document.hidden
-                ) {
-
-                    backgroundVideo.pause();
-
-                } else {
-
-                    backgroundVideo
-                        .play()
-                        .catch(() => {});
-
-                }
-
-            }
-        );
-
-
-        /*
-         * Make sure muted autoplay starts
-         * when possible.
-         */
-
-        backgroundVideo.muted = true;
-
-        backgroundVideo
-            .play()
-            .catch(() => {});
-
-    </script>
-
+  <footer><div class="container footer-grid"><div class="foot-brand">Silly<span> V2</span></div><div class="foot-note">Independent community project for Clutcher.io. Not affiliated with the game's developers.</div><a class="foot-link" href="https://discord.gg/K7xzQRtJP3" target="_blank" rel="noopener noreferrer">Discord ↗</a></div></footer>
+  <script>
+    // Only the preview tabs are interactive; these do not affect the actual game.
+    const previewData = {
+      Legit: {subtitle:'Aim assistance settings.', modules:[['Silent Aim','FOV and optional aim circle.',true]]},
+      Rage: {subtitle:'Advanced aim and network controls.', modules:[['Anti Aim','Yaw, pitch, jitter and body angles.',true],['Fake Lag / Freeze','Network simulation settings.',false],['Rage Bot','Target area, resolver and Crouch Peek.',true],['Rapid Fire','Fire rate controls.',false]]},
+      Visuals: {subtitle:'Customize the way your game looks.', modules:[['Viewmodel','FOV, XYZ offsets, arms and weapon chams.',true],['Player Model','Import custom .glb models with rig retargeting.',false],['World Settings','Day / Night, fog, rain, snow and particles.',true],['Bone ESP','Player skeleton and info settings.',false],['Arrow ESP','Off-screen player indicators.',false],['Third Person','Camera controls and viewing distance.',false]]},
+      Movement: {subtitle:'Control movement behavior.', modules:[['Auto Bhop','Continuous bunny hopping controls.',true],['Auto Strafe','WASD, Legit and Rage strafe modes.',true]]},
+      Misc: {subtitle:'Extra personal touches.', modules:[['Hitsounds','Import your own audio for confirmed kills.',false]]},
+      Settings: {subtitle:'Appearance and saved presets.', modules:[['Appearance','Accent color and compact layout.',true],['Configs','Import and export settings as .cfg.',true]]}
+    };
+    const tabs = [...document.querySelectorAll('.client-tab')];
+    const title = document.getElementById('preview-title');
+    const subtitle = document.getElementById('preview-sub');
+    const list = document.getElementById('module-list');
+    function showTab(name) {
+      const data = previewData[name];
+      if (!data) return;
+      tabs.forEach(tab => { tab.setAttribute('aria-selected', String(tab.dataset.panel === name)); tab.tabIndex = tab.dataset.panel === name ? 0 : -1; });
+      title.textContent = name;
+      subtitle.textContent = data.subtitle;
+      list.replaceChildren();
+      data.modules.forEach(([moduleName, description, enabled]) => {
+        const row = document.createElement('div'); row.className = 'module-row';
+        const heading = document.createElement('div'); heading.className = 'module-heading';
+        const strong = document.createElement('strong'); strong.textContent = moduleName;
+        const right = document.createElement('span'); right.className = 'module-heading-right';
+        const bind = document.createElement('span'); bind.className = 'module-bind'; bind.textContent = '···';
+        const toggle = document.createElement('span'); toggle.className = 'module-toggle' + (enabled ? ' on' : ''); toggle.setAttribute('aria-hidden', 'true');
+        right.append(bind, toggle); heading.append(strong, right);
+        const desc = document.createElement('p'); desc.className = 'module-desc'; desc.textContent = description;
+        row.append(heading, desc); list.append(row);
+      });
+    }
+    tabs.forEach((tab, i) => {
+      tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+      tab.addEventListener('click', () => showTab(tab.dataset.panel));
+      tab.addEventListener('keydown', e => {
+        if (!['ArrowDown','ArrowUp','Home','End'].includes(e.key)) return;
+        e.preventDefault();
+        const next = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length-1 : (i + (e.key === 'ArrowDown' ? 1 : -1) + tabs.length) % tabs.length;
+        tabs[next].focus(); showTab(tabs[next].dataset.panel);
+      });
+    });
+    showTab('Visuals'); // Make the initial preview match the current V2 module list.
+    // The original background.mp4 is optional and remains untouched.
+    const video = document.querySelector('.video-backdrop video');
+    if (video && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.addEventListener('visibilitychange', () => { if (document.hidden) video.pause(); else video.play().catch(() => {}); });
+      video.play().catch(() => {});
+    } else if (video) video.pause();
+  </script>
 </body>
 </html>
